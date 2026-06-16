@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Edit Item — Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:680px;">
+  <h2 class="mb-4">Edit Item</h2>
+  <form method="POST" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Item Type</label>
+      <div class="d-flex gap-3">
+        {% for subfield in form.item_type %}
+        <div class="form-check">
+          {{ subfield(class='form-check-input') }}
+          {{ subfield.label(class='form-check-label') }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      {{ form.item_name.label(class='form-label fw-semibold') }}
+      {{ form.item_name(class='form-control' + (' is-invalid' if form.item_name.errors else '')) }}
+      {% for e in form.item_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.category.label(class='form-label fw-semibold') }}
+      {{ form.category(class='form-select' + (' is-invalid' if form.category.errors else '')) }}
+      {% for e in form.category.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.location.label(class='form-label fw-semibold') }}
+      {{ form.location(class='form-control' + (' is-invalid' if form.location.errors else '')) }}
+      {% for e in form.location.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.date_occurred.label(class='form-label fw-semibold') }}
+      {{ form.date_occurred(class='form-control' + (' is-invalid' if form.date_occurred.errors else '')) }}
+      {% for e in form.date_occurred.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.description.label(class='form-label fw-semibold') }}
+      {{ form.description(class='form-control' + (' is-invalid' if form.description.errors else ''), rows=4) }}
+      {% for e in form.description.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.tags.label(class='form-label fw-semibold') }}
+      {{ form.tags(class='form-control') }}
+    </div>
+
+    <div class="mb-4">
+      {{ form.photo.label(class='form-label fw-semibold') }}
+      {% if item.photo_url %}
+      <div class="mb-2">
+        <img src="{{ item.photo_url }}" style="height:100px;object-fit:cover;border-radius:6px;" alt="Current photo">
+        <div class="form-text">Upload a new photo to replace the current one.</div>
+      </div>
+      {% endif %}
+      {{ form.photo(class='form-control') }}
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-fill">Save Changes</button>
+      <a href="{{ url_for('items.detail', item_id=item._id) }}" class="btn btn-outline-secondary flex-fill">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

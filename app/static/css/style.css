@@ -1,0 +1,124 @@
+/* app/static/css/style.css */
+
+/* ── Card hover animations ──────────────────────────────────── */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Button hover polish ─────────────────────────────────────── */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Badge subtle pop ────────────────────────────────────────── */
+.badge {
+  transition: transform 0.15s ease;
+}
+
+/* ── Navbar active link underline ───────────────────────────── */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #4FC3F7;
+  transition: width 0.2s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ── Fade-in animation for page content ─────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* ── Landing page hero ───────────────────────────────────────── */
+.hero-section {
+  background: linear-gradient(135deg, #1B2A4A 0%, #0F6E56 100%);
+  color: white;
+  padding: 80px 20px;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+  font-weight: 800;
+  font-size: 2.8rem;
+}
+
+.hero-section p {
+  font-size: 1.15rem;
+  opacity: 0.9;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(15,110,86,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #0F6E56;
+  margin-bottom: 0.75rem;
+}
+
+.feature-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: 100%;
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: #0F6E56;
+  box-shadow: 0 4px 16px rgba(15,110,86,0.15);
+}
+
+/* ── Stats counter on landing page ──────────────────────────── */
+.stat-box {
+  text-align: center;
+  padding: 1rem;
+}
+
+.stat-box .number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0F6E56;
+}
+
+.stat-box .label {
+  color: #6c757d;
+  font-size: 0.9rem;
+}

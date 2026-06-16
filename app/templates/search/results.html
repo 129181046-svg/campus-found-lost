@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}Search — Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="row">
+
+  <!-- Filters sidebar -->
+  <div class="col-md-3 mb-4">
+    <div class="card p-3">
+      <h6 class="fw-bold mb-3" style="color:#1B2A4A">
+        <i class="bi bi-funnel"></i> Filters
+      </h6>
+      <form method="GET" action="{{ url_for('search.results') }}">
+
+        <!-- Search query -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Search</label>
+          <input type="text" name="q" value="{{ query }}"
+                 class="form-control form-control-sm"
+                 placeholder="Item name, tags...">
+        </div>
+
+        <!-- Item type -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Type</label>
+          <select name="item_type" class="form-select form-select-sm">
+            <option value="">All</option>
+            <option value="lost"  {% if item_type == 'lost'  %}selected{% endif %}>Lost</option>
+            <option value="found" {% if item_type == 'found' %}selected{% endif %}>Found</option>
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Category</label>
+          <select name="category" class="form-select form-select-sm">
+            <option value="">All Categories</option>
+            {% for cat in ['electronics','clothing','books','accessories','documents','keys','bags','sports','other'] %}
+            <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>
+              {{ cat | capitalize }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Location</label>
+          <select name="location" class="form-select form-select-sm">
+            <option value="">All Locations</option>
+            {% for loc in ['library','canteen','main_block','hostel','sports_complex','lab_block','auditorium','other'] %}
+            <option value="{{ loc }}" {% if location == loc %}selected{% endif %}>
+              {{ loc | replace('_',' ') | title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Status</label>
+          <select name="status" class="form-select form-select-sm">
+            <option value="open"    {% if status == 'open'    %}selected{% endif %}>Open</option>
+            <option value=""        {% if status == ''        %}selected{% endif %}>All</option>
+            <option value="claimed" {% if status == 'claimed' %}selected{% endif %}>Claimed</option>
+            <option value="returned"{% if status == 'returned'%}selected{% endif %}>Returned</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-search"></i> Search
+        </button>
+        <a href="{{ url_for('search.results') }}"
+           class="btn btn-outline-secondary btn-sm w-100 mt-2">
+          Clear Filters
+        </a>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="col-md-9">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0" style="color:#1B2A4A">
+        {% if query %}
+          Results for "{{ query }}"
+        {% else %}
+          All Items
+        {% endif %}
+        <span class="text-muted fs-6 fw-normal">({{ items|length }} found)</span>
+      </h5>
+    </div>
+
+    <!-- Active filters display -->
+    {% if query or category or location or item_type or status %}
+    <div class="mb-3 d-flex flex-wrap gap-2">
+      {% if query %}
+        <span class="badge bg-secondary">
+          Search: {{ query }}
+        </span>
+      {% endif %}
+      {% if item_type %}
+        <span class="badge {% if item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %}">
+          {{ item_type | capitalize }}
+        </span>
+      {% endif %}
+      {% if category %}
+        <span class="badge bg-secondary">{{ category | capitalize }}</span>
+      {% endif %}
+      {% if location %}
+        <span class="badge bg-secondary">{{ location | replace('_',' ') | title }}</span>
+      {% endif %}
+      {% if status %}
+        <span class="badge bg-primary">{{ status | capitalize }}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if items %}
+    <div class="row g-3">
+      {% for item in items %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="card h-100">
+          {% if item.photo_url %}
+          <img src="{{ item.photo_url }}" class="card-img-top"
+               style="height:160px;object-fit:cover;" alt="{{ item.item_name }}">
+          {% else %}
+          <div class="bg-light d-flex align-items-center justify-content-center"
+               style="height:160px;">
+            <i class="bi bi-image text-muted" style="font-size:2rem;"></i>
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <div class="mb-1">
+              <span class="badge {% if item.item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %} me-1">
+                {{ item.item_type | upper }}
+              </span>
+              <span class="badge
+                {% if item.status == 'open' %}bg-primary
+                {% elif item.status == 'claimed' %}bg-warning text-dark
+                {% else %}bg-secondary{% endif %}">
+                {{ item.status | upper }}
+              </span>
+            </div>
+            <h6 class="card-title fw-bold mb-1">{{ item.item_name }}</h6>
+            <p class="text-muted small mb-1">
+              <i class="bi bi-geo-alt"></i>
+              {{ item.location | replace('_',' ') | title }}
+            </p>
+            <p class="text-muted small mb-0">
+              <i class="bi bi-calendar"></i>
+              {{ item.created_at.strftime('%d %b %Y') }}
+            </p>
+          </div>
+          <div class="card-footer bg-white border-top-0">
+            <a href="{{ url_for('items.detail', item_id=item._id|string) }}"
+               class="btn btn-outline-primary btn-sm w-100">
+              <i class="bi bi-eye"></i> View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-search text-muted" style="font-size:4rem;"></i>
+      <h5 class="mt-3 text-muted">No items found</h5>
+      <p class="text-muted">Try different keywords or clear the filters.</p>
+      <a href="{{ url_for('search.results') }}" class="btn btn-outline-secondary me-2">
+        Clear Filters
+      </a>
+      <a href="{{ url_for('items.report') }}" class="btn btn-primary">
+        Report an Item
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

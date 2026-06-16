@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Campus Lost & Found{% endblock %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ── SIDEBAR ──────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 230px;
+      background: #1B2A4A;
+      color: white;
+      padding-top: 1rem;
+      z-index: 1040;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 1.25rem 1.5rem;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      padding: 0.7rem 1.25rem;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: background 0.15s ease;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: rgba(255,255,255,0.08);
+      color: #4FC3F7 !important;
+    }
+
+    .sidebar .nav-link i {
+      font-size: 1.1rem;
+      width: 22px;
+      text-align: center;
+    }
+
+    .sidebar-divider {
+      border-color: rgba(255,255,255,0.1);
+      margin: 0.75rem 1.25rem;
+    }
+
+    .sidebar-section-label {
+      padding: 0.5rem 1.25rem 0.25rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── MAIN CONTENT AREA ────────────────────────────── */
+    .main-content {
+      margin-left: 230px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    .topbar {
+      background: white;
+      border-bottom: 1px solid #eee;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    /* ── SIDEBAR TOGGLE (mobile) ──────────────────────── */
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #1B2A4A;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .sidebar-toggle {
+        display: block;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1035;
+      }
+      .sidebar-overlay.show {
+        display: block;
+      }
+    }
+
+    .card {
+      border: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .flash-container {
+      margin-top: 1rem;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  {% if session.user_id %}
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <nav class="sidebar" id="sidebar">
+    <a href="{{ url_for('main.home') }}" class="sidebar-brand">
+      <i class="bi bi-search-heart"></i> Campus Lost & Found
+    </a>
+
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('items.explore') %}active{% endif %}"
+           href="{{ url_for('items.explore') }}">
+          <i class="bi bi-compass-fill"></i> Explore
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('items.report') %}active{% endif %}"
+           href="{{ url_for('items.report') }}">
+          <i class="bi bi-plus-circle-fill"></i> Report Item
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('search.results') %}active{% endif %}"
+           href="{{ url_for('search.results') }}">
+          <i class="bi bi-search"></i> Search
+        </a>
+      </li>
+
+      <li class="sidebar-divider"><hr></li>
+      <li class="sidebar-section-label">My Activity</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('items.my_items') %}active{% endif %}"
+           href="{{ url_for('items.my_items') }}">
+          <i class="bi bi-grid-fill"></i> My Items
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('matching.my_matches') %}active{% endif %}"
+           href="{{ url_for('matching.my_matches') }}">
+          <i class="bi bi-diagram-3-fill"></i> My Matches
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('claims.my_claims') %}active{% endif %}"
+           href="{{ url_for('claims.my_claims') }}">
+          <i class="bi bi-hand-index-fill"></i> My Claims
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('claims.incoming') %}active{% endif %}"
+           href="{{ url_for('claims.incoming') }}">
+          <i class="bi bi-inbox-fill"></i> Incoming
+        </a>
+      </li>
+
+      <li class="sidebar-divider"><hr></li>
+      <li class="sidebar-section-label">Account</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == url_for('admin.dashboard') %}active{% endif %}"
+           href="{{ url_for('admin.dashboard') }}">
+          <i class="bi bi-shield-check"></i> Admin Panel
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      {% if session.user_id %}
+      <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <form class="d-flex flex-grow-1 mx-3" method="GET" action="{{ url_for('search.results') }}">
+        <div class="input-group input-group-sm" style="max-width:320px;">
+          <input type="text" name="q" class="form-control"
+                 placeholder="Search items..."
+                 value="{{ request.args.get('q', '') }}">
+          <button class="btn btn-outline-secondary" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <a href="{{ url_for('notifications.list_notifications') }}"
+   class="text-decoration-none position-relative me-3">
+  <i class="bi bi-bell-fill fs-5" style="color:#1B2A4A;"></i>
+  {% if unread_count and unread_count > 0 %}
+  <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle"
+        style="font-size:0.6rem;">
+    {{ unread_count }}
+  </span>
+  {% endif %}
+</a>
+
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-person-circle fs-5" style="color:#1B2A4A;"></i>
+        <span class="fw-semibold" style="color:#1B2A4A;">{{ session.user_name }}</span>
+      </div>
+
+      {% else %}
+      <a href="{{ url_for('main.home') }}" class="fw-bold text-decoration-none" style="color:#1B2A4A;">
+        <i class="bi bi-search-heart"></i> Campus Lost & Found
+      </a>
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a>
+      </div>
+      {% endif %}
+    </div>
+
+      <!-- Mobile bottom nav -->
+{% if session.user_id %}
+<nav class="d-md-none fixed-bottom bg-white border-top d-flex justify-content-around py-2"
+     style="z-index:1030;">
+  <a href="{{ url_for('items.explore') }}" class="text-center text-decoration-none text-dark">
+    <i class="bi bi-compass-fill fs-5"></i>
+    <div style="font-size:0.7rem;">Explore</div>
+  </a>
+  <a href="{{ url_for('items.report') }}" class="text-center text-decoration-none text-dark">
+    <i class="bi bi-plus-circle-fill fs-5" style="color:#0F6E56;"></i>
+    <div style="font-size:0.7rem;">Report</div>
+  </a>
+  <a href="{{ url_for('matching.my_matches') }}" class="text-center text-decoration-none text-dark">
+    <i class="bi bi-diagram-3-fill fs-5"></i>
+    <div style="font-size:0.7rem;">Matches</div>
+  </a>
+  <a href="{{ url_for('claims.incoming') }}" class="text-center text-decoration-none text-dark">
+    <i class="bi bi-inbox-fill fs-5"></i>
+    <div style="font-size:0.7rem;">Inbox</div>
+  </a>
+  <a href="{{ url_for('items.my_items') }}" class="text-center text-decoration-none text-dark">
+    <i class="bi bi-grid fs-5"></i>
+    <div style="font-size:0.7rem;">My Items</div>
+  </a>
+</nav>
+<div class="d-md-none" style="height:60px;"></div> <!-- spacer so content isn't hidden -->
+{% endif %}
+
+    <!-- FLASH MESSAGES -->
+    <div class="container flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <main class="container-fluid px-4 py-3">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-muted py-4 mt-5 border-top">
+      <small>Campus Lost & Found Network (c) 2026 - SASTRA Deemed University</small>
+    </footer>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

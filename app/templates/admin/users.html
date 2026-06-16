@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Admin — Users{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+  <h3 class="fw-bold mb-0" style="color:#1B2A4A">
+    <i class="bi bi-people"></i> All Users
+    <span class="text-muted fs-6 fw-normal">({{ users|length }})</span>
+  </h3>
+  <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    ← Dashboard
+  </a>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead style="background:#1B2A4A;color:white;">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Roll No</th>
+        <th>Department</th>
+        <th>Items</th>
+        <th>Claims</th>
+        <th>Admin</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td class="fw-semibold">{{ u.name }}</td>
+        <td class="small">{{ u.email }}</td>
+        <td class="small">{{ u.roll_no }}</td>
+        <td class="small">{{ u.department }}</td>
+        <td><span class="badge bg-primary">{{ u.item_count }}</span></td>
+        <td><span class="badge bg-secondary">{{ u.claim_count }}</span></td>
+        <td>
+          {% if u.is_admin %}
+            <span class="badge bg-success">Admin</span>
+          {% else %}
+            <span class="badge bg-light text-dark">User</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST"
+                action="{{ url_for('admin.toggle_admin', user_id=u._id|string) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+              {% if u.is_admin %}Revoke Admin{% else %}Make Admin{% endif %}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

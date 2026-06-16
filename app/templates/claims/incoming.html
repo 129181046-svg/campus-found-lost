@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Incoming Claims{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-4 mt-2" style="color:#1B2A4A">
+  <i class="bi bi-inbox"></i> Incoming Claims
+</h3>
+
+{% if claims %}
+<div class="row g-3">
+  {% for c in claims %}
+  <div class="col-12 col-md-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h6 class="fw-bold mb-0">{{ c.item_name }}</h6>
+        <span class="badge
+          {% if c.status == 'pending' %}bg-warning text-dark
+          {% elif c.status == 'approved' %}bg-success
+          {% else %}bg-danger{% endif %}">
+          {{ c.status | capitalize }}
+        </span>
+      </div>
+
+      <p class="text-muted small mb-1">
+        <i class="bi bi-person"></i> Claimer: <strong>{{ c.claimer_name }}</strong>
+        ({{ c.claimer_email }})
+      </p>
+      <p class="text-muted small mb-1">
+        Submitted: {{ c.created_at.strftime('%d %b %Y') }}
+      </p>
+
+      <hr>
+      <p class="small mb-1"><strong>Color:</strong> {{ c.color }}</p>
+      <p class="small mb-1"><strong>Brand:</strong> {{ c.brand }}</p>
+      <p class="small mb-1"><strong>Unique Marks:</strong> {{ c.unique_marks }}</p>
+      <p class="small mb-3"><strong>Extra Info:</strong> {{ c.extra_info }}</p>
+
+      {% if c.status == 'pending' %}
+      <div class="d-flex gap-2">
+        <form method="POST" action="{{ url_for('claims.approve', claim_id=c._id|string) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-success btn-sm">
+            <i class="bi bi-check-circle"></i> Approve
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('claims.reject', claim_id=c._id|string) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger btn-sm">
+            <i class="bi bi-x-circle"></i> Reject
+          </button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5">
+  <i class="bi bi-inbox text-muted" style="font-size:4rem;"></i>
+  <h5 class="mt-3 text-muted">No incoming claims yet</h5>
+  <p class="text-muted">When someone claims an item you found, it will appear here.</p>
+</div>
+{% endif %}
+{% endblock %}

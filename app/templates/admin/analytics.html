@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Analytics — Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+  <h3 class="fw-bold mb-0" style="color:#1B2A4A">
+    <i class="bi bi-bar-chart-line"></i> Analytics Dashboard
+  </h3>
+  <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    ← Dashboard
+  </a>
+</div>
+
+<!-- Recovery Rate Gauge -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card p-4 text-center h-100">
+      <h6 class="text-muted mb-3">Recovery Rate</h6>
+      <div style="position:relative; height:180px;">
+        <canvas id="recoveryGauge"></canvas>
+      </div>
+      <div class="fs-2 fw-bold mt-2" style="color:#0F6E56">{{ recovery_rate }}%</div>
+    </div>
+  </div>
+
+  <!-- Lost vs Found Pie -->
+  <div class="col-md-4">
+    <div class="card p-4 text-center h-100">
+      <h6 class="text-muted mb-3">Lost vs Found</h6>
+      <canvas id="typeChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Status Breakdown -->
+  <div class="col-md-4">
+    <div class="card p-4 text-center h-100">
+      <h6 class="text-muted mb-3">Item Status</h6>
+      <canvas id="statusChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Category Distribution + Time Trend -->
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-4">
+      <h6 class="text-muted mb-3">Items by Category</h6>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card p-4">
+      <h6 class="text-muted mb-3">Items Reported — Last 14 Days</h6>
+      <canvas id="timeChart"></canvas>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ── Recovery Rate Gauge (doughnut) ──────────────────────────────
+new Chart(document.getElementById('recoveryGauge'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Returned', 'Remaining'],
+    datasets: [{
+      data: [{{ recovery_rate }}, {{ 100 - recovery_rate }}],
+      backgroundColor: ['#0F6E56', '#E8E8E8'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    cutout: '75%',
+    plugins: { legend: { display: false } }
+  }
+});
+
+// ── Lost vs Found Pie ────────────────────────────────────────────
+new Chart(document.getElementById('typeChart'), {
+  type: 'pie',
+  data: {
+    labels: ['Lost', 'Found'],
+    datasets: [{
+      data: [{{ type_data.lost }}, {{ type_data.found }}],
+      backgroundColor: ['#c0392b', '#27ae60']
+    }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// ── Status Breakdown ─────────────────────────────────────────────
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Open', 'Claimed', 'Returned'],
+    datasets: [{
+      data: [
+        {{ status_data.open }},
+        {{ status_data.claimed }},
+        {{ status_data.returned }}
+      ],
+      backgroundColor: ['#0d6efd', '#ffc107', '#6c757d']
+    }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// ── Category Distribution (bar) ──────────────────────────────────
+new Chart(document.getElementById('categoryChart'), {
+  type: 'bar',
+  data: {
+    labels: [{% for c in category_data %}'{{ c._id | capitalize }}',{% endfor %}],
+    datasets: [{
+      label: 'Items',
+      data: [{% for c in category_data %}{{ c.count }},{% endfor %}],
+      backgroundColor: '#1B2A4A'
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+  }
+});
+
+// ── Items Over Time (line) ───────────────────────────────────────
+new Chart(document.getElementById('timeChart'), {
+  type: 'line',
+  data: {
+    labels: [{% for t in time_data %}'{{ t._id }}',{% endfor %}],
+    datasets: [{
+      label: 'Items Reported',
+      data: [{% for t in time_data %}{{ t.count }},{% endfor %}],
+      borderColor: '#0F6E56',
+      backgroundColor: 'rgba(15,110,86,0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+  }
+});
+</script>
+{% endblock %}

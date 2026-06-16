@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ item.item_name }} — Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-9 col-lg-8">
+
+    <!-- Status + Type badge -->
+    <div class="d-flex align-items-center gap-2 mb-3 mt-2">
+      <span class="badge fs-6
+        {% if item.item_type == 'lost' %}bg-danger
+        {% else %}bg-success{% endif %}">
+        <i class="bi bi-{{ 'emoji-frown' if item.item_type == 'lost' else 'emoji-smile' }}"></i>
+        {{ item.item_type | upper }}
+      </span>
+      <span class="badge fs-6
+        {% if item.status == 'open' %}bg-primary
+        {% elif item.status == 'matched' %}bg-warning text-dark
+        {% elif item.status == 'claimed' %}bg-info text-dark
+        {% else %}bg-secondary{% endif %}">
+        {{ item.status | upper }}
+      </span>
+    </div>
+
+    <div class="card p-4">
+      <div class="row">
+
+        <!-- Photo column -->
+        <div class="col-md-4 mb-3 mb-md-0">
+          {% if item.photo_url %}
+            <img src="{{ item.photo_url }}"
+                 alt="{{ item.item_name }}"
+                 class="img-fluid rounded shadow-sm">
+          {% else %}
+            <div class="bg-light rounded d-flex align-items-center
+                        justify-content-center"
+                 style="height:200px;">
+              <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Details column -->
+        <div class="col-md-8">
+          <h3 class="fw-bold" style="color:#1B2A4A">{{ item.item_name }}</h3>
+
+          <table class="table table-sm table-borderless mt-2">
+            <tr>
+              <td class="text-muted fw-semibold" style="width:35%">Category</td>
+              <td>{{ item.category }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted fw-semibold">Location</td>
+              <td><i class="bi bi-geo-alt"></i> {{ item.location }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted fw-semibold">Reported</td>
+              <td>{{ item.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted fw-semibold">Reported by</td>
+              <td>{{ item.user_name }}</td>
+            </tr>
+          </table>
+
+          <!-- Description -->
+          <div class="mt-2">
+            <p class="fw-semibold text-muted mb-1">Description</p>
+            <p>{{ item.description }}</p>
+          </div>
+
+          <!-- Tags -->
+          {% if item.tags %}
+            <div class="mt-2">
+              {% for tag in item.tags %}
+                <span class="badge bg-light text-dark border me-1">#{{ tag }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Claim button — only for non-owners on FOUND + OPEN items -->
+      {% if not is_owner and item.item_type == 'found' and item.status == 'open' %}
+        {% if session.user_id %}
+        <hr class="mt-4">
+        <div class="mt-2">
+          <a href="{{ url_for('claims.submit', item_id=item._id|string) }}"
+             class="btn btn-primary">
+            <i class="bi bi-hand-index"></i> This is Mine — Submit Claim
+          </a>
+        </div>
+        {% endif %}
+      {% endif %}
+
+      <!-- Owner actions -->
+      {% if is_owner %}
+        <hr class="mt-4">
+        <div class="d-flex gap-2">
+          <a href="{{ url_for('items.edit', item_id=item._id|string) }}"
+             class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <form method="POST"
+                action="{{ url_for('items.delete', item_id=item._id|string) }}"
+                onsubmit="return confirm('Delete this item report? This cannot be undone.')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <div class="mt-3">
+      <a href="{{ url_for('items.my_items') }}"
+         class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i> Back to My Items
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

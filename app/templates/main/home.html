@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Campus Lost & Found Network{% endblock %}
+
+{% block content %}
+
+{% if session.user_id %}
+<!-- ── Logged-in view ───────────────────────────────────────── -->
+<div class="text-center py-4">
+  <h2 class="fw-bold" style="color:#1B2A4A">
+    Welcome back, {{ session.user_name }}!
+  </h2>
+  <p class="text-muted">
+    Report a lost or found item and let the matching engine do its work.
+  </p>
+  <a href="{{ url_for('items.report') }}" class="btn btn-primary btn-lg mt-2">
+    <i class="bi bi-plus-circle"></i> Report an Item
+  </a>
+</div>
+
+{% else %}
+<!-- ── Logged-out landing page ──────────────────────────────── -->
+<div class="hero-section text-center">
+  <h1>Lost Something on Campus?</h1>
+  <p class="mb-4">
+    Campus Lost & Found Network connects students who lose items with
+    students who find them — powered by intelligent matching.
+  </p>
+  <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-2">
+    <i class="bi bi-person-plus"></i> Get Started
+  </a>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+    <i class="bi bi-box-arrow-in-right"></i> Log In
+  </a>
+</div>
+
+<!-- Stats -->
+<div class="row mb-4">
+  <div class="col-4">
+    <div class="stat-box">
+      <div class="number">{{ stats.total_items }}</div>
+      <div class="label">Items Reported</div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="stat-box">
+      <div class="number">{{ stats.returned_items }}</div>
+      <div class="label">Items Returned</div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="stat-box">
+      <div class="number">{{ stats.total_users }}</div>
+      <div class="label">Active Users</div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="bi bi-camera"></i>
+      </div>
+      <h6 class="fw-bold">Report with Photos</h6>
+      <p class="text-muted small mb-0">
+        Upload a photo of your lost or found item — stored securely on Cloudinary.
+      </p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="bi bi-diagram-3"></i>
+      </div>
+      <h6 class="fw-bold">Smart Matching</h6>
+      <p class="text-muted small mb-0">
+        Our matching engine automatically finds possible matches based on
+        item name, location, category, and date.
+      </p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <h6 class="fw-bold">Verified Claims</h6>
+      <p class="text-muted small mb-0">
+        Claim workflow ensures items are returned to their rightful
+        owners — no fake claims.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="card p-4">
+  <h5 class="fw-bold mb-3" style="color:#1B2A4A">How It Works</h5>
+  <div class="row g-3 text-center">
+    <div class="col-md-3">
+      <div class="fw-bold fs-4" style="color:#0F6E56">1</div>
+      <p class="small mb-0">Register with your campus email</p>
+    </div>
+    <div class="col-md-3">
+      <div class="fw-bold fs-4" style="color:#0F6E56">2</div>
+      <p class="small mb-0">Report a lost or found item</p>
+    </div>
+    <div class="col-md-3">
+      <div class="fw-bold fs-4" style="color:#0F6E56">3</div>
+      <p class="small mb-0">Get matched automatically</p>
+    </div>
+    <div class="col-md-4">
+      <div class="fw-bold fs-4" style="color:#0F6E56">4</div>
+      <p class="small mb-0">Submit a claim and recover your item</p>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
