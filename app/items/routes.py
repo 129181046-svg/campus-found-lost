@@ -46,27 +46,28 @@ def report():
 
         # ── Build item document ──────────────────────────────────────────
         item_doc = {
-            "item_type":            form.item_type.data,
-            "reported_by":          user["_id"],
-            "reporter_name":        user["name"],
-            "reporter_email":       user["email"],
-            "reporter_phone":       user.get("phone", ""),
-            "user_id":              user["_id"],        # for matching engine
-            "user_name":            user["name"],       # for matching engine
-            "item_name":            form.item_name.data.strip(),
-            "category":             form.category.data,
-            "location":             form.location.data,
-            "date_occurred":        datetime.combine(
-                                        form.date_occurred.data,
-                                        datetime.min.time()
-                                    ) if form.date_occurred.data else None,
-            "description":          form.description.data.strip(),
-            "photo_url":            photo_url,
-            "cloudinary_public_id": photo_public_id,
-            "tags":                 tags,
-            "status":               "open",
-            "created_at":           datetime.now(timezone.utc),
-        }
+        "item_type":            form.item_type.data,
+        "reported_by":          user["_id"],
+        "reporter_name":        user["name"],
+        "reporter_email":       user["email"],
+        "reporter_phone":       user.get("phone", ""),
+        "user_id":              user["_id"],
+        "user_name":            user["name"],
+        "item_name":            form.item_name.data.strip(),
+        "category":             form.category.data,
+        "location":             form.location.data,
+        "room_number":          form.room_number.data.strip() if form.room_number.data else "",  # ← ADD
+        "date_occurred":        datetime.combine(
+                                    form.date_occurred.data,
+                                    datetime.min.time()
+                                ) if form.date_occurred.data else None,
+        "description":          form.description.data.strip(),
+        "photo_url":            photo_url,
+        "cloudinary_public_id": photo_public_id,
+        "tags":                 tags,
+        "status":               "open",
+        "created_at":           datetime.now(timezone.utc),
+    }
         
         
 
@@ -246,6 +247,7 @@ def edit(item_id):
         form.item_name.data   = item["item_name"]
         form.category.data    = item["category"]
         form.location.data    = item["location"]
+        form.room_number.data = item.get("room_number", "")
         form.date_occurred.data = item.get("date_occurred").date() if item.get("date_occurred") else None
         form.description.data = item["description"]
         form.tags.data        = ", ".join(item.get("tags", []))

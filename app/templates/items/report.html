@@ -42,21 +42,27 @@
 
         <!-- Category and Location side by side -->
         <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.category.label(class="form-label fw-semibold") }}
-            {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
-            {% for error in form.category.errors %}
-              <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
+            <div class="col-md-6 mb-3">
+              {{ form.category.label(class="form-label fw-semibold") }}
+              {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
+              {% for error in form.category.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6 mb-3">
+              {{ form.location.label(class="form-label fw-semibold") }}
+              {{ form.location(class="form-select" + (" is-invalid" if form.location.errors else "")) }}
+              {% for error in form.location.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
           </div>
-          <div class="col-md-6 mb-3">
-            {{ form.location.label(class="form-label fw-semibold") }}
-            {{ form.location(class="form-select" + (" is-invalid" if form.location.errors else "")) }}
-            {% for error in form.location.errors %}
-              <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
+
+          <div class="mb-3">
+            {{ form.room_number.label(class="form-label fw-semibold") }}
+            {{ form.room_number(class="form-control", placeholder="e.g. 2nd Floor, Room 204") }}
+            <small class="text-muted">Optional — helps others pinpoint the exact spot</small>
           </div>
-        </div>
         <!-- Date Occurred -->
         <div class="mb-3">
           {{ form.date_occurred.label(class="form-label fw-semibold") }}

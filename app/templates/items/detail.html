@@ -67,6 +67,11 @@
           <div class="mt-2">
             <p class="fw-semibold text-muted mb-1">Description</p>
             <p>{{ item.description }}</p>
+            <p><i class="bi bi-geo-alt"></i> {{ item.location }}
+                {% if item.room_number %}
+                  — {{ item.room_number }}
+                {% endif %}
+              </p>
           </div>
 
           <!-- Tags -->

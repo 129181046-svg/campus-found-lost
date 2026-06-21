@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField, SelectField, DateField, RadioField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Optional
 
 class ItemReportForm(FlaskForm):
     item_type = SelectField('Item Type', choices=[
@@ -24,15 +24,50 @@ class ItemReportForm(FlaskForm):
     ], validators=[DataRequired()])
     location = SelectField('Location', choices=[
         ('', '-- Select Location --'),
-        ('library', 'Library'),
-        ('canteen', 'Canteen'),
-        ('main_block', 'Main Block'),
-        ('hostel', 'Hostel'),
-        ('sports_complex', 'Sports Complex'),
-        ('lab_block', 'Lab Block'),
+        ('SOC', 'SOC'),
+        ('VV Block', 'VV Block'),
+        ('SOME (Mech)', 'SOME (Mech)'),
+        ('SASHE', ' SASHE'),
+        ('TDC', ' TDC'),
+        ('LTC', 'LTC'),
         ('auditorium', 'Auditorium'),
-        ('other', 'Other'),
+        ('LIBRARY', 'Library'),
+        ('JVC', 'JVC'),
+        ('NMV', 'NMV'),
+        ('CHANAKYA', 'CHANAKYA'),
+        ('MANISHA', 'MANISHA'),
+        ('CHITH VIHAR', 'CHITH VIHAR'),
+        ('AROGYASALA [GURUNATH]', 'AROGYASALA (GURUNATH)'),
+        ('VANIVIHAR', 'VANIVIHAR'),
+        ('GNANA VIHAR', 'GNANA VIHAR'),
+        ('VIDHYA VIHAR', 'VIDHYA VIHAR'),
+        ('KRISHNA CANTEEN', 'KRISHNA CANTEEN'),
+        ('SHANMUGA CANTEEN', 'SHANMUGA CANTEEN'),
+        ('SOUTHERN CANTEEN', 'SOUTHERN CANTEEN'),
+        ('VELA CAFE', 'NORTH CANTEEN'),
+        ('ARUNDATI HOSTEL', 'ARUNDATI HOSTEL'),
+        ('AHALYA HOSTEL', 'AHALYA HOSTEL'),
+        ('ANASUYA HOSTEL', 'ANASUYA HOSTEL'),
+        ('SV NEW', 'SV NEW'),
+        ('SV OLD', 'SV OLD'),
+        ('VB-1', 'VB-1'),
+        ('VB-2', 'VB-2'),
+        ('VB-3', 'VB-3'),
+        ('SPS', 'SPS'),
+        ('RLV', 'RLV'),
+        ('KAMADENU', 'KAMADENU'),
+        ('PV', 'PV'),
+        ('VASHISTA', 'VASHISTA'),
+        ('TEMPLE', 'TEMPLE'),
+        ('SAC', 'SAC')
     ], validators=[DataRequired()])
+
+    # NEW — optional floor/classroom detail
+    room_number = StringField(
+        'Floor / Room No. (optional)',
+        validators=[Optional(), Length(max=50)]
+    )
+
     date_occurred = DateField('Date Lost/Found', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired(), Length(10, 500)])
     tags = StringField('Tags (comma-separated, e.g. blue, nike, airpods)')
