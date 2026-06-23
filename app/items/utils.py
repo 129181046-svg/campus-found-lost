@@ -24,7 +24,6 @@ def upload_item_photo(file_stream):
             transformation = [
                 {"width": 800, "crop": "limit"},
                 {"fetch_format": "webp"},
-                {"flags": "strip_exif"},
             ],
             resource_type  = "image",
         )
