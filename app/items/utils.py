@@ -15,6 +15,8 @@ def configure_cloudinary():
 
 
 def upload_item_photo(file_stream):
+    # Reconfigure on every upload to ensure credentials are fresh
+    configure_cloudinary()
     try:
         result = cloudinary.uploader.upload(
             file_stream,
