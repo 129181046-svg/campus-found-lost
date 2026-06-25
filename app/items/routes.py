@@ -77,7 +77,7 @@ def report():
         # ── Trigger matching engine ──────────────────────────────────────
         try:
             from app.matching.engine import run_matching
-            run_matching(str(result.inserted_id))
+            run_matching(str(result.inserted_id))   
         except Exception as e:
             print(f"Matching engine error: {e}")
 
