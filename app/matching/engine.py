@@ -39,7 +39,7 @@ def run_matching(new_item_id: str):
         'item_type': opposite_type,
         'status': 'open',
         '_id': {'$ne': ObjectId(new_item_id)},
-    })
+    }).limit(100)  # Limit to 100 candidates for performance
 
     for candidate in candidates:
         lost, found = (new_item, candidate) if new_item['item_type'] == 'lost' else (candidate, new_item)
