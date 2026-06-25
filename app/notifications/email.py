@@ -5,21 +5,27 @@ from flask_mail import Message
 from app.extensions import mail
 
 
+import threading
+
+def send_async_mail(app, msg):
+    with app.app_context():
+        from app.extensions import mail
+        try:
+            mail.send(msg)
+        except Exception as e:
+            print(f"Async mail error: {e}")
+
 def _send(subject, recipients, template, **kwargs):
-    """Internal helper — render template and send email."""
-    try:
-        html = render_template(template, **kwargs)
-        msg  = Message(
-            subject    = subject,
-            recipients = recipients if isinstance(recipients, list) else [recipients],
-            html       = html,
-            sender     = current_app.config["MAIL_USERNAME"],
-        )
-        mail.send(msg)
-        return True
-    except Exception as e:
-        current_app.logger.error(f"Email send error: {e}")
-        return False
+    from flask import current_app, render_template
+    msg = Message(
+        subject    = subject,
+        recipients = [recipients] if isinstance(recipients, str) else recipients,
+        html       = render_template(template, **kwargs)
+    )
+    app = current_app._get_current_object()
+    thread = threading.Thread(target=send_async_mail, args=(app, msg))
+    thread.daemon = True
+    thread.start()
 
 
 def send_match_notification(recipient_email, recipient_name,
