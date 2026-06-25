@@ -16,17 +16,15 @@ def send_async_mail(app, msg):
             print(f"Async mail error: {e}")
 
 def _send(subject, recipients, template, **kwargs):
-    from flask import current_app, render_template
-    msg = Message(
-        subject    = subject,
-        recipients = [recipients] if isinstance(recipients, str) else recipients,
-        html       = render_template(template, **kwargs)
-    )
-    app = current_app._get_current_object()
-    thread = threading.Thread(target=send_async_mail, args=(app, msg))
-    thread.daemon = True
-    thread.start()
-
+    try:
+        msg = Message(
+            subject    = subject,
+            recipients = [recipients] if isinstance(recipients, str) else recipients,
+            html       = render_template(template, **kwargs)
+        )
+        mail.send(msg)
+    except Exception as e:
+        current_app.logger.error(f"Mail send error: {e}")
 
 def send_match_notification(recipient_email, recipient_name,
                              my_item, other_item, score, view_url):
