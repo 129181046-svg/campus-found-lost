@@ -6,10 +6,23 @@ from app.extensions import bcrypt
 from app.auth.forms import RegistrationForm, LoginForm
 from app.auth.utils import login_user, logout_user, get_current_user
 from datetime import datetime, timezone
+from authlib.integrations.flask_client import OAuth
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+oauth = OAuth()
+google = None
 
+def init_oauth(app):
+    global google
+    oauth.init_app(app)
+    google = oauth.register(
+        name='google',
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'},
+    )
 # -------------------------------------------------------------------------
 # REGISTER
 # -------------------------------------------------------------------------
@@ -80,6 +93,9 @@ def login():
         if user and bcrypt.check_password_hash(
             user["password_hash"], form.password.data
         ):
+            if not user['email'].endswith('@sastra.ac.in'):
+                flash('Only SASTRA University email addresses (@sastra.ac.in) are allowed.', 'danger')
+                return render_template("auth/login.html", form=form)
             try:
                 current_app.db.users.update_one(
                     {"_id": user["_id"]},
@@ -108,3 +124,63 @@ def logout():
     logout_user()
     flash(f"You have been logged out, {name}. See you soon!", "info")
     return redirect(url_for("auth.login"))
+
+@auth_bp.route('/google/login')
+def google_login():
+    redirect_uri = url_for('auth.google_callback', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route('/google/callback')
+def google_callback():
+    token = google.authorize_access_token()
+    user_info = token.get('userinfo')
+
+    if not user_info:
+        flash('Google login failed. Please try again.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    email     = user_info['email']
+    if not email.endswith('@sastra.ac.in'):
+        flash('Only SASTRA University email addresses (@sastra.ac.in) are allowed to register.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    name      = user_info.get('name', email.split('@')[0])
+    google_id = user_info['sub']
+    picture   = user_info.get('picture', '')
+
+    db   = current_app.db
+    user = db.users.find_one({'$or': [
+        {'google_id': google_id},
+        {'email': email}
+    ]})
+
+    if user:
+        if not user.get('google_id'):
+            db.users.update_one(
+                {'_id': user['_id']},
+                {'$set': {'google_id': google_id, 'picture': picture}}
+            )
+        login_user(user)
+        flash(f'Welcome back, {user["name"]}!', 'success')
+        return redirect(url_for('items.explore'))
+
+    else:
+        from datetime import datetime, timezone
+        new_user = {
+            'name':       name,
+            'email':      email,
+            'google_id':  google_id,
+            'picture':    picture,
+            'password':   None,
+            'roll_no':    '',
+            'department': '',
+            'phone':      '',
+            'is_admin':   False,
+            'created_at': datetime.now(timezone.utc),
+        }
+        result = db.users.insert_one(new_user)
+        new_user['_id'] = result.inserted_id
+        login_user(new_user)
+        flash(f'Welcome to Campus Lost & Found, {name}!', 'success')
+        return redirect(url_for('items.explore'))

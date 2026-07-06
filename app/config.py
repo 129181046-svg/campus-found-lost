@@ -73,6 +73,9 @@ class Config:
     TWILIO_AUTH_TOKEN     = os.getenv('TWILIO_AUTH_TOKEN')
     TWILIO_WHATSAPP_FROM  = os.getenv('TWILIO_WHATSAPP_FROM')
     
+    GOOGLE_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+    
     
 class DevelopmentConfig(Config):
     # -------------------------------------------------------------------------

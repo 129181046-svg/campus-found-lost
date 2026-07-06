@@ -2,9 +2,11 @@
 
 import os
 import certifi
-from flask import Flask, render_template
+from flask import Flask, app, render_template
 from pymongo import MongoClient
 from flask_wtf.csrf import CSRFProtect, generate_csrf
+
+from app.auth.routes import init_oauth
 from .config import config_map
 from .extensions import bcrypt, talisman, mail
 from .items.utils import configure_cloudinary
@@ -130,6 +132,9 @@ def create_app():
     
     from .notifications.routes import notifications_bp
     app.register_blueprint(notifications_bp)
+    
+    from .auth.routes import init_oauth
+    init_oauth(app)
 
     # ── 7. HEALTH CHECK ──────────────────────────────────────────────
     @app.route("/ping")
