@@ -64,30 +64,19 @@ class RegistrationForm(FlaskForm):
 
     submit = SubmitField("Create Account")
 
-    # -------------------------------------------------------------------------
-    # CUSTOM VALIDATORS
-    # -------------------------------------------------------------------------
-    # WTForms automatically calls any method named validate_<fieldname>
-    # These run after the standard validators above pass.
+    def validate_email(self, email):
+        if not email.data.lower().endswith('@sastra.ac.in'):
+            raise ValidationError('Only SASTRA University email addresses (@sastra.ac.in) are allowed.')
+        try:
+            existing = current_app.db.users.find_one({'email': email.data.lower()})
+            if existing:
+                raise ValidationError('This email is already registered.')
+        except ValidationError:
+            raise
+        except Exception:
+            pass
 
-def validate_email(self, email):
-    # Allow both SASTRA and Gmail for testing
-    allowed = email.data.lower().endswith('@sastra.ac.in') or \
-              email.data.lower().endswith('@gmail.com')
-    if not allowed:
-        raise ValidationError('Only SASTRA or Gmail addresses allowed.')
-    
-    # Check duplicate
-    try:
-        existing = current_app.db.users.find_one({'email': email.data.lower()})
-        if existing:
-            raise ValidationError('This email is already registered.')
-    except ValidationError:
-        raise
-    except Exception:
-        pass
-
-def validate_roll_no(self, roll_no):
+    def validate_roll_no(self, roll_no):
         try:
             existing = current_app.db.users.find_one(
                 {"roll_no": roll_no.data.strip().upper()}
@@ -101,9 +90,9 @@ def validate_roll_no(self, roll_no):
         except Exception:
             pass
 
-def validate_phone(self, phone):
-    if not phone.data.isdigit():
-        raise ValidationError("Phone number must contain digits only.")
+    def validate_phone(self, phone):
+        if not phone.data.isdigit():
+            raise ValidationError("Phone number must contain digits only.")
 
 
 # -------------------------------------------------------------------------
