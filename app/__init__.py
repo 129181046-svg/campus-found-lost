@@ -35,7 +35,7 @@ def create_app():
 
     
     # ── 1. LOAD CONFIG ───────────────────────────────────────────────
-    env = os.getenv("FLASK_ENV", "development")
+    env = os.getenv("FLASK_ENV", "production")
     app.config.from_object(config_map[env])
 
     # ── 2. CONNECT TO MONGODB ────────────────────────────────────────
