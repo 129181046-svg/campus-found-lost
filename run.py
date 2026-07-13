@@ -10,4 +10,4 @@ if __name__ == "__main__":
     # Auto-reload is a dev convenience only — this has zero
     # effect on production (Render uses gunicorn, not this file).
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)   

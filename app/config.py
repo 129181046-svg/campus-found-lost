@@ -77,6 +77,8 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
     
     
+    BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+    
 class DevelopmentConfig(Config):
     # -------------------------------------------------------------------------
     # DEVELOPMENT OVERRIDES
