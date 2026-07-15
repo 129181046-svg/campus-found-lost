@@ -12,14 +12,31 @@ from flask import current_app
 # -------------------------------------------------------------------------
 DEPARTMENTS = [
     ("", "-- Select Department --"),
+    ("ARS",  "Aerospace Engineering"),
+    ("BIE",  "Bio Engineering"),
+    ("BIOINFO",  "Bioinformatics"),
+    ("BIO",  "Biotechnology"),
+    ("CHEM",  "Chemical Engineering"),
+    ("CIV",  "Civil Engineering"),
     ("CSE",  "Computer Science & Engineering"),
+    ("CSE",  "Computer Science & Engineering (AI&DS)"),
+    ("CSE",  "Computer Science & Engineering (Cyber Security & Blockchain)"),
+    ("CSE",  "Computer Science & Engineering (IOT & AUTOMATION)"),
+    ("CSE",  "Computer Science & Engineering (Networks)"),    
     ("ECE",  "Electronics & Communication"),
     ("EEE",  "Electrical & Electronics"),
+    ("EIE",  "Electronics & Instrumentation Engineering"),
+    ("RAI",  "Robotics & Artificial Intelligence"),
+    ("ECOME",  "Electronics & Computer Engineering"),
     ("MECH", "Mechanical Engineering"),
-    ("CIVIL","Civil Engineering"),
+    ("IEM",  "Industrial Engineering & Management"),
+    ("Mechatronics",  "Mechatronics Engineering"),
     ("IT",   "Information Technology"),
-    ("BIO",  "Biotechnology"),
-    ("CHEM", "Chemical Engineering"),
+    ("MedNano",  "Medical Nanotechnology"),
+    ("B.A.LLB",  "B.A.LLB"),
+    ("B.COM.LLB",  "B.COM.LLB"),
+    ("B.B.A.LLB",  "B.B.A.LLB"),
+    ("SASHE",  "School of ARTS & SCIENCE, HUMANITIES & EDUCATION")
 ]
 
 # -------------------------------------------------------------------------

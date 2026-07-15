@@ -135,6 +135,38 @@
     .flash-container {
       margin-top: 1rem;
     }
+    .fab-report {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1B2A4A;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.fab-report:hover {
+  background: #24396b;
+  color: white;
+  transform: scale(1.08);
+}
+
+@media (max-width: 768px) {
+  .fab-report {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
   </style>
 
   {% block extra_css %}{% endblock %}
@@ -264,32 +296,10 @@
       {% endif %}
     </div>
 
-      <!-- Mobile bottom nav -->
-{% if session.user_id %}
-<nav class="d-md-none fixed-bottom bg-white border-top d-flex justify-content-around py-2"
-     style="z-index:1030;">
-  <a href="{{ url_for('items.explore') }}" class="text-center text-decoration-none text-dark">
-    <i class="bi bi-compass-fill fs-5"></i>
-    <div style="font-size:0.7rem;">Explore</div>
-  </a>
-  <a href="{{ url_for('items.report') }}" class="text-center text-decoration-none text-dark">
-    <i class="bi bi-plus-circle-fill fs-5" style="color:#0F6E56;"></i>
-    <div style="font-size:0.7rem;">Report</div>
-  </a>
-  <a href="{{ url_for('matching.my_matches') }}" class="text-center text-decoration-none text-dark">
-    <i class="bi bi-diagram-3-fill fs-5"></i>
-    <div style="font-size:0.7rem;">Matches</div>
-  </a>
-  <a href="{{ url_for('claims.incoming') }}" class="text-center text-decoration-none text-dark">
-    <i class="bi bi-inbox-fill fs-5"></i>
-    <div style="font-size:0.7rem;">Inbox</div>
-  </a>
-  <a href="{{ url_for('items.my_items') }}" class="text-center text-decoration-none text-dark">
-    <i class="bi bi-grid fs-5"></i>
-    <div style="font-size:0.7rem;">My Items</div>
-  </a>
-</nav>
-<div class="d-md-none" style="height:60px;"></div> <!-- spacer so content isn't hidden -->
+      {% if session.user_id %}
+<a href="{{ url_for('items.report') }}" class="fab-report" title="Report Item">
+  <i class="bi bi-plus-lg"></i>
+</a>
 {% endif %}
 
     <!-- FLASH MESSAGES -->
