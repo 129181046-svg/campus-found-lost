@@ -48,7 +48,7 @@
           <label class="form-label small fw-semibold">Location</label>
           <select name="location" class="form-select form-select-sm">
             <option value="">All Locations</option>
-            {% for loc in ['library','canteen','main_block','hostel','sports_complex','lab_block','auditorium','other'] %}
+            {% for loc in ['SOC','VV Block','SOME (Mech)','SASHE','TDC','LTC','auditorium','LIBRARY','JVC','NMV','CHANAKYA','MANISHA','CHITH VIHAR','AROGYASALA [GURUNATH]','VANIVIHAR','GNANA VIHAR','VIDHYA VIHAR','KRISHNA CANTEEN','SHANMUGA CANTEEN','SOUTHERN CANTEEN','VELA CAFE','ARUNDATI HOSTEL','AHALYA HOSTEL','ANASUYA HOSTEL','SV NEW','SV OLD','VB-1','VB-2','VB-3','SPS','RLV','KAMADENU','PV','VASHISTA','TEMPLE','SAC'] %}
             <option value="{{ loc }}" {% if location == loc %}selected{% endif %}>
               {{ loc | replace('_',' ') | title }}
             </option>
